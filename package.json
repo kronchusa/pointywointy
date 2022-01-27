@@ -1,0 +1,9 @@
+{
+    "name": "pointy-wointy",
+    "version": "0.0.1",
+    "description": "For counting points for estimating tickets",
+    "dependencies": {
+        "express": "^4.17.2",
+        "socket.io": "^4.4.1"
+    }
+}

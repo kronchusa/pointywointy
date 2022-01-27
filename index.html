@@ -1,0 +1,150 @@
+<head>
+    <title>Welcome to Pointy Wointy</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">    
+</head>
+<style>
+    .card {
+        margin-top: 25px;
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1>Pointy Wointy</h1>
+                <h3>Simply way better than Pointing Poker, for no real reason</h3>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <label>Your Name</label>
+                <input class="form-control" id="name">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="btn btn-primary" id="clearvotes">Clear Votes</div>
+                <div class="btn btn-primary" id="showhide">Show/Hide Votes</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="btn btn-primary" id="point0">0 points</div>
+                <div class="btn btn-primary" id="point1">1 points</div>
+                <div class="btn btn-primary" id="point2">2 points</div>
+                <div class="btn btn-primary" id="point3">3 points</div>
+                <div class="btn btn-primary" id="point5">5 points</div>
+                <div class="btn btn-primary" id="point8">8 points</div>
+                <div class="btn btn-primary" id="point13">13 points</div>
+                <div class="btn btn-primary" id="point20">20 points</div>
+                <div class="btn btn-primary" id="point40">40 points</div>
+                <div class="btn btn-primary" id="point100">100 points</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h2>Users</h2>
+                <table id="usertable" class="table">
+                    <tr>
+                        <th>Username</th>
+                        <th>Points</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        var nameInput = document.getElementById('name')
+        
+        var userTable = document.getElementById('usertable')
+
+        nameInput.addEventListener('change', function(e){
+            socket.emit('name change', nameInput.value)
+        })
+
+        document.getElementById('point0').addEventListener('click', function(e) {
+            socket.emit('points', 0)
+        })
+
+        document.getElementById('point1').addEventListener('click', function(e) {
+            socket.emit('points', 1)
+        })
+
+        document.getElementById('point2').addEventListener('click', function(e) {
+            socket.emit('points', 2)
+        })
+
+        document.getElementById('point3').addEventListener('click', function(e) {
+            socket.emit('points', 3)
+        })
+        document.getElementById('point5').addEventListener('click', function(e) {
+            socket.emit('points', 5)
+        })
+        document.getElementById('point8').addEventListener('click', function(e) {
+            socket.emit('points', 8)
+        })
+        document.getElementById('point13').addEventListener('click', function(e) {
+            socket.emit('points', 13)
+        })
+        document.getElementById('point20').addEventListener('click', function(e) {
+            socket.emit('points', 20)
+        })
+        document.getElementById('point40').addEventListener('click', function(e) {
+            socket.emit('points', 40)
+        })
+        document.getElementById('point100').addEventListener('click', function(e) {
+            socket.emit('points', 100)
+        })
+
+        document.getElementById('clearvotes').addEventListener('click', function(e) {
+            socket.emit('clear votes')
+        })
+
+        document.getElementById('showhide').addEventListener('click', function(e) {
+            socket.emit('show hide')
+        })
+
+        var users = {}
+        var showVotes = true
+
+        socket.on('change users', function(data) {
+            users = data.users
+            showVotes = data.showVotes
+            userTable.innerHTML = `
+                <tr>
+                    <th>Username</th>
+                    <th>Points</th>
+                </tr>
+            `
+            for(const [u_id, user] of Object.entries(users)) {
+                userTable.innerHTML += `
+                <tr>
+                    <td>${user.name}</td>
+                    <td class='pointcolumns'>${user.points === -1 ? "" : user.points}</td>
+                </tr>
+                `
+            }
+            let bg = !showVotes ? "black" : "white"
+       
+            let pointcolumns = document.getElementsByClassName('pointcolumns')
+
+            for(let i=0;i<pointcolumns.length;i++) {
+                pointcolumns[i].bgColor = bg
+            }
+        })
+
+        socket.on('remove id', function(data) {
+            delete users[data.id]
+        })
+
+    </script>
+   
+</body>
