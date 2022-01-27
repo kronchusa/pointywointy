@@ -128,7 +128,7 @@
             for(const [u_id, user] of Object.entries(users)) {
                 userTable.innerHTML += `
                 <tr>
-                    <td>${user.name}</td>
+                    <td>${user.name} ${user.points !== -1 && "(/)"}</td>
                     <td class='pointcolumns'>${user.points === -1 ? "" : user.points}</td>
                 </tr>
                 `
