@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h1>Pointy Wointy</h1>
                 <h3>Simply way better than Pointing Poker, for no real reason</h3>
-                <h5>A stupid app, by David Sheffield</h5>
+                
             </div>
         </div>
 
@@ -57,6 +57,9 @@
                 </table>
             </div>
         </div>
+        <center>
+            <p>A pointless app, by David Sheffield</p>
+        </center>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -128,7 +131,7 @@
             for(const [u_id, user] of Object.entries(users)) {
                 userTable.innerHTML += `
                 <tr>
-                    <td>${user.name} ${user.points !== -1 && "(/)"}</td>
+                    <td>${user.name} ${user.points !== -1 ? "(VOTED)" : "(UNCOOL)"}</td>
                     <td class='pointcolumns'>${user.points === -1 ? "" : user.points}</td>
                 </tr>
                 `
