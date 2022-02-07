@@ -29,11 +29,13 @@ io.on('connection', (socket) => {
     })
 
     socket.on('points', (pts) => {
-        users[socket.client.id] = {...users[socket.client.id], points: pts}
-        io.emit('change users', {
-            users: users,
-            showVotes: showVotes,
-        })
+        if(!showVotes) {
+            users[socket.client.id] = {...users[socket.client.id], points: pts}
+            io.emit('change users', {
+                users: users,
+                showVotes: showVotes,
+            })
+        } 
     })
 
     socket.on('clear votes', () => {

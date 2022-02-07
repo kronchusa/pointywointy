@@ -13,7 +13,6 @@
             <div class="card-body">
                 <h1>Pointy Wointy</h1>
                 <h3>Simply way better than Pointing Poker, for no real reason</h3>
-                
             </div>
         </div>
 
@@ -33,16 +32,17 @@
 
         <div class="card">
             <div class="card-body">
-                <div class="btn btn-primary" id="point0">0 points</div>
+                <div class="alert alert-info">Can only vote when scores are hidden to avoid the deadly disease known as peeking-at-other-peoples-score-itus</div>
+                <!-- <div class="btn btn-primary" id="point0">0 points</div> -->
                 <div class="btn btn-primary" id="point1">1 points</div>
                 <div class="btn btn-primary" id="point2">2 points</div>
                 <div class="btn btn-primary" id="point3">3 points</div>
                 <div class="btn btn-primary" id="point5">5 points</div>
                 <div class="btn btn-primary" id="point8">8 points</div>
                 <div class="btn btn-primary" id="point13">13 points</div>
-                <div class="btn btn-primary" id="point20">20 points</div>
-                <div class="btn btn-primary" id="point40">40 points</div>
-                <div class="btn btn-primary" id="point100">100 points</div>
+                <div class="btn btn-primary" id="point21">21 points</div>
+                <div class="btn btn-primary" id="point34">34 points</div>
+                <div class="btn btn-primary" id="point55">55 points</div>
             </div>
         </div>
         
@@ -74,9 +74,9 @@
             socket.emit('name change', nameInput.value)
         })
 
-        document.getElementById('point0').addEventListener('click', function(e) {
-            socket.emit('points', 0)
-        })
+        // document.getElementById('point0').addEventListener('click', function(e) {
+        //     socket.emit('points', 0)
+        // })
 
         document.getElementById('point1').addEventListener('click', function(e) {
             socket.emit('points', 1)
@@ -85,7 +85,6 @@
         document.getElementById('point2').addEventListener('click', function(e) {
             socket.emit('points', 2)
         })
-
         document.getElementById('point3').addEventListener('click', function(e) {
             socket.emit('points', 3)
         })
@@ -98,14 +97,14 @@
         document.getElementById('point13').addEventListener('click', function(e) {
             socket.emit('points', 13)
         })
-        document.getElementById('point20').addEventListener('click', function(e) {
-            socket.emit('points', 20)
+        document.getElementById('point21').addEventListener('click', function(e) {
+            socket.emit('points', 21)
         })
-        document.getElementById('point40').addEventListener('click', function(e) {
-            socket.emit('points', 40)
+        document.getElementById('point34').addEventListener('click', function(e) {
+            socket.emit('points', 34)
         })
-        document.getElementById('point100').addEventListener('click', function(e) {
-            socket.emit('points', 100)
+        document.getElementById('point55').addEventListener('click', function(e) {
+            socket.emit('points', 55)
         })
 
         document.getElementById('clearvotes').addEventListener('click', function(e) {
