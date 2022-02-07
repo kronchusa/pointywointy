@@ -137,7 +137,7 @@
             for(const [u_id, user] of Object.entries(users)) {
                 userTable.innerHTML += `
                 <tr>
-                    <td>${user.hp <= 0 ? "[Potatoed to Death]" : ""} ${user.name} ${user.points !== -1 ? "(VOTED)" : "(UNCOOL)"}</td>
+                    <td>${user.hp <= 0 ? "[Potatoed to Death]" : ""} ${user.name} ${user.points !== -1 ? "&#10004;" : "&#10060;"}</td>
                     <td class='pointcolumns'><span class='pointtexts'>${user.points === -1 ? "" : user.points}</span></td>
                     <td><div class='btn btn-danger' onClick='potato("${u_id}")'>&#129364;</div></td>
                 </tr>
