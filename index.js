@@ -14,7 +14,7 @@ let showVotes = true
 
 io.on('connection', (socket) => {
     console.log('New Person connected');
-    users[socket.client.id] = {name: "New Person", points: -1}
+    users[socket.client.id] = {name: "New Person", points: -1, hp: 25}
     io.emit('change users', {
         users: users,
         showVotes: showVotes,
@@ -22,6 +22,14 @@ io.on('connection', (socket) => {
 
     socket.on('name change', (name) => {
         users[socket.client.id] = {...users[socket.client.id], name: name}
+        io.emit('change users', {
+            users: users,
+            showVotes: showVotes,
+        })
+    })
+
+    socket.on('hp change', hp => {
+        users[socket.client.id] = {...users[socket.client.id], hp: hp}
         io.emit('change users', {
             users: users,
             showVotes: showVotes,
@@ -71,6 +79,18 @@ io.on('connection', (socket) => {
             showVotes: showVotes,
         })
       });
+
+      socket.on('potato', u_id => {
+          io.emit('user potatoed', {
+              potatoed_by: socket.client.id,
+              potatoed: u_id,
+          })
+          users[u_id].hp -= 1
+          io.emit('change users', {
+              users: users,
+              showVotes: showVotes,
+          })
+      })
   });
   
 let port = process.env.PORT || 80
