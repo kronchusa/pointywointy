@@ -1,57 +1,65 @@
 const express = require('express');
 const app = express();
+app.set('view engine', 'pug')
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io")
 const io = new Server(server)
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html')
+  res.render('index', {title: `Pointy Wointy Room #${req.query.room}`})
 });
 
 let users = {}
 let showVotes = true
 
 io.on('connection', (socket) => {
-    console.log('New Person connected');
-    users[socket.client.id] = {name: "New Person", points: -1, hp: 25}
-    io.emit('change users', {
-        users: users,
+    const room = socket.handshake.headers.referer.split("room=")[1] || 0
+    const client_id = socket.client.id
+    socket.join(room)
+    console.log(`New Person connected to room ${room}`)
+    if(!(room in users)){
+        users[room] = {}
+    }
+    users[room][client_id] = {name: "New Person", points: -1, hp: 25, room: room}
+    
+    io.to(room).emit('change users', {
+        users: users[room],
         showVotes: showVotes,
     })
 
     socket.on('name change', (name) => {
-        users[socket.client.id] = {...users[socket.client.id], name: name}
-        io.emit('change users', {
-            users: users,
+        users[room][socket.client.id] = {...users[room][socket.client.id], name: name}
+        io.to(room).emit('change users', {
+            users: users[room],
             showVotes: showVotes,
         })
     })
 
     socket.on('hp change', hp => {
-        users[socket.client.id] = {...users[socket.client.id], hp: hp}
-        io.emit('change users', {
-            users: users,
+        users[room][socket.client.id] = {...users[room][socket.client.id], hp: hp}
+        io.to(room).emit('change users', {
+            users: users[room],
             showVotes: showVotes,
         })
     })
 
     socket.on('points', (pts) => {
         if(!showVotes) {
-            users[socket.client.id] = {...users[socket.client.id], points: pts}
-            io.emit('change users', {
-                users: users,
+            users[room][socket.client.id] = {...users[room][socket.client.id], points: pts}
+            io.to(room).emit('change users', {
+                users: users[room],
                 showVotes: showVotes,
             })
         } 
     })
 
     socket.on('clear votes', () => {
-        for(const [u_id, user] of Object.entries(users)) {
-            users[u_id] = {...user, points: -1}
+        for(const [u_id, user] of Object.entries(users[room])) {
+            users[room][u_id] = {...user, points: -1}
         }
-        io.emit('change users', {
-            users: users,
+        io.to(room).emit('change users', {
+            users: users[room],
             showVotes: showVotes,
         })
     })
@@ -62,32 +70,32 @@ io.on('connection', (socket) => {
         } else {
             showVotes = true
         }
-        io.emit('change users', {
-            users: users,
+        io.to(room).emit('change users', {
+            users: users[room],
             showVotes: showVotes,
         })
     })
 
     socket.on('disconnect', () => {
-        io.emit('remove id', {
+        io.to(room).emit('remove id', {
             id: socket.client.id,
         })
         console.log(`${users[socket.client.id]} disconnected`);
-        delete users[socket.client.id]
-        io.emit('change users', {
-            users: users,
+        delete users[room][socket.client.id]
+        io.to(room).emit('change users', {
+            users: users[room],
             showVotes: showVotes,
         })
       });
 
       socket.on('potato', u_id => {
-          io.emit('user potatoed', {
+          io.to(room).emit('user potatoed', {
               potatoed_by: socket.client.id,
               potatoed: u_id,
           })
-          users[u_id].hp -= 1
-          io.emit('change users', {
-              users: users,
+          users[room][u_id].hp -= 1
+          io.to(room).emit('change users', {
+              users: users[room],
               showVotes: showVotes,
           })
       })
