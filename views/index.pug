@@ -1,0 +1,154 @@
+html
+  head
+    title= title
+    link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css') 
+  body
+    style().
+        .card {
+            margin-top: 25px;
+        }
+        .btn-primary {
+            margin:15px;
+        }
+    div.container
+        div.card
+            div.card-body
+                h1= title
+                h3 Simply way better than Pointing Poker, for no real reason
+                div.alert.alert-success Want to change rooms?  Put ?room=XYZ in the get params above, what do I look like a user interface?
+        
+        div.card
+            div.card-body
+                label Your Name
+                input.form-control#name
+        
+        div.card
+            div.card-body
+                div.btn.btn-primary#clearvotes Clear Votes
+                div.btn.btn-primary#showhide Show/Hide Votes
+
+        div.card
+            div.card-body
+                div.alert.alert-info Can only vote when scores are hidden to avoid the deadly disease known as peeking-at-other-peoples-score-itus
+                div.btn.btn-primary#point1 1 point
+                div.btn.btn-primary#point2 2 points
+                div.btn.btn-primary#point3 3 points
+                div.btn.btn-primary#point5 5 points
+                div.btn.btn-primary#point8 8 points
+                div.btn.btn-primary#point13 13 points
+                div.btn.btn-primary#point21 21 points
+                div.btn.btn-primary#point34 34 points
+                div.btn.btn-primary#point55 55 points
+
+        div.card
+            div.card-body
+                h2 Users
+                table.table#usertable
+                    tr
+                        th Username
+                        th Points
+
+        center
+            p(style='font-size:0.6em;') A pointless app, by 
+                a(href='https://www.youtube.com/watch?v=dQw4w9WgXcQ') David Sheffield   
+        
+script(src='/socket.io/socket.io.js')
+script.
+    var socket = io();
+    var nameInput = document.getElementById('name')
+    
+    var userTable = document.getElementById('usertable')
+
+    nameInput.addEventListener('change', function(e){
+        socket.emit('name change', nameInput.value)
+    })
+
+    // document.getElementById('point0').addEventListener('click', function(e) {
+    //     socket.emit('points', 0)
+    // })
+
+    document.getElementById('point1').addEventListener('click', function(e) {
+        socket.emit('points', 1)
+    })
+
+    document.getElementById('point2').addEventListener('click', function(e) {
+        socket.emit('points', 2)
+    })
+    document.getElementById('point3').addEventListener('click', function(e) {
+        socket.emit('points', 3)
+    })
+    document.getElementById('point5').addEventListener('click', function(e) {
+        socket.emit('points', 5)
+    })
+    document.getElementById('point8').addEventListener('click', function(e) {
+        socket.emit('points', 8)
+    })
+    document.getElementById('point13').addEventListener('click', function(e) {
+        socket.emit('points', 13)
+    })
+    document.getElementById('point21').addEventListener('click', function(e) {
+        socket.emit('points', 21)
+    })
+    document.getElementById('point34').addEventListener('click', function(e) {
+        socket.emit('points', 34)
+    })
+    document.getElementById('point55').addEventListener('click', function(e) {
+        socket.emit('points', 55)
+    })
+
+    document.getElementById('clearvotes').addEventListener('click', function(e) {
+        socket.emit('clear votes')
+    })
+
+    document.getElementById('showhide').addEventListener('click', function(e) {
+        socket.emit('show hide')
+    })
+
+    var users = {}
+    var showVotes = true
+
+    socket.on('change users', function(data) {
+        users = data.users
+        showVotes = data.showVotes
+        userTable.innerHTML = `
+            <tr>
+                <th>Username</th>
+                <th>Points</th>
+                <th>Actions</th>
+            </tr>
+        `
+        for(const [u_id, user] of Object.entries(users)) {
+            userTable.innerHTML += `
+            <tr>
+                <td>${user.hp <= 0 ? "[Potatoed to Death]" : ""} ${user.name} ${user.points !== -1 ? "&#10004;" : "&#10060;"}</td>
+                <td class='pointcolumns'><span class='pointtexts'>${user.points === -1 ? "" : user.points}</span></td>
+                <td><div class='btn btn-danger' onClick='potato("${u_id}")'>&#129364;</div></td>
+            </tr>
+            `
+        }
+        let bg = !showVotes ? "black" : "white"
+        let textVisibility = showVotes ? "visible" : "hidden"
+
+        let pointcolumns = document.getElementsByClassName('pointcolumns')
+        let pointtexts = document.getElementsByClassName('pointtexts')
+
+        for(let i=0;i<pointcolumns.length;i++) {
+            pointcolumns[i].bgColor = bg
+            pointtexts[i].style.visibility = textVisibility
+            
+        }
+    })
+
+    socket.on('remove id', function(data) {
+        delete users[data.id]
+    })
+
+    const potato = u_id => {
+        socket.emit('potato', u_id)
+    }
+
+    socket.on('user potatoed', function(data) {
+        const potatoedByUser = users[data.potatoed_by]
+        const potatoedUser = users[data.potatoed]
+        console.log(`${potatoedByUser.name} throws a potato at ${potatoedUser.name} reducing hp to ${potatoedUser.hp}`)
+    })
